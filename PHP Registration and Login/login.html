@@ -1,0 +1,35 @@
+<html>
+<body>
+<form name="login" action="success.html" onsubmit="return check_credentials()" method="post">
+Username: <input type="text" name="u_name">
+<br>
+<br>
+Password: <input type="password" name="pwd">
+<br>
+<br>
+<input type="submit" value="Login">
+</form>
+
+<script>
+// Fields to check.
+var username = document.forms["login"]["u_name"];
+var password = document.forms["login"]["pwd"];
+
+// Check the credentials.
+function check_credentials(){
+	var path = "check_login.php?username=" + username.value + "&password=" + password.value;
+    xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("GET",path,false);
+    xmlhttp.send(null);
+    if(xmlhttp.responseText === "err_usr"){
+		window.alert("The user does not exist!");
+		return false;
+	} else if(xmlhttp.responseText === "err_pwd"){
+		window.alert("The password is incorrect!");
+		return false;
+	}
+	return true;
+}
+</script>
+</body>
+</html>

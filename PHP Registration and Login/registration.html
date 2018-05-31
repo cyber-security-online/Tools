@@ -1,0 +1,98 @@
+<html>
+<body>
+<form name="register" action="login.html" onsubmit="return validate()" method="post">
+Username*: <input type="text" name="u_name">
+<br>
+<br>
+E-Mail*: <input type="text" name="email">
+<br>
+<br>
+Password*: <input type="password" name="pwd">
+<br>
+<br>
+Check Password*: <input type="password" name="check_pwd">
+<br>
+<br>
+<input type="submit" value="Submit">
+</form>
+
+<script>
+// Fields to check.
+var username = document.forms["register"]["u_name"];
+var email = document.forms["register"]["email"];
+var password = document.forms["register"]["pwd"];
+var check_password = document.forms["register"]["check_pwd"];
+	
+// Validate Mail addresses.
+function validate_email(email) {
+    var regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return regex.test(String(email).toLowerCase());
+}
+
+// Asynchronous validation call.
+function validation_call(to_test,type){
+    var path = "check_registration.php?col=" + to_test + "&type=" + type;
+    xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("GET",path,false);
+    xmlhttp.send(null);
+    if(xmlhttp.responseText === "err"){
+		return false;
+    }
+	return true;
+}
+
+function save(){
+	var path = "save.php?username=" + username.value + "&email=" + email.value + "&password=" + password.value;
+    xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("GET",path,false);
+    xmlhttp.send(null);	
+}
+
+// Function for form validation.
+function validate(){
+	// Any errors?
+	var has_err = false;
+
+	// Error message.
+	var err_msg = "The following errors occured while trying to complete the registration:\n";
+
+	// Check if none of the fields are empty.
+	if(username.value === "" || email.value === "" || password.value === "" || check_password.value === ""){
+		has_err = true;
+		err_msg += "- At least one field has not been filled.\n";
+	}
+	
+	// Check if the username address has already been taken.
+	if(!validation_call(username.value,"username")){
+		has_err = true;
+		err_msg += "- The username has already been taken.\n";	
+	}
+
+	// Check if the E-Mail address is invalid.
+	if(!validate_email(email.value)){
+		has_err = true;
+		err_msg += "- The entered E-Mail address is invalid.\n";	
+	} /* Check if the E-Mail address has already been taken. */ else if(!validation_call(email.value,"email")){
+		has_err = true;
+		err_msg += "- The E-Mail address has already been taken.\n";			
+	}
+	
+	// Check if the entered passwords are identical.
+	if(password.value !== check_password.value){
+		has_err = true;
+		err_msg += "- The entered passwords are not identical.\n";	
+	} /*define custom rules*/ else if(password.length < 5){
+		has_err = true;
+		err_msg += "- The password needs to be at least 5 characters long.\n";			
+	}
+	
+	if(has_err){
+		window.alert(err_msg);
+		return false;
+	} else {
+		save();
+	}
+}
+</script>
+</body>
+</html>
